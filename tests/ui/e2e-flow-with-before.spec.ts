@@ -18,8 +18,7 @@ test('signIn button disabled when incorrect data inserted', async ({}) => {
 })
 
 test('error message displayed when incorrect credentials used', async ({}) => {
-  await loginPage.signInWrongCredentials(faker.lorem.word(5), faker.lorem.word(10)
-  )
+  await loginPage.signInWrongCredentials(faker.lorem.word(5), faker.lorem.word(10))
 })
 
 test('login with correct credentials and verify order creation page', async ({}) => {
@@ -86,12 +85,10 @@ test('login and create order with name field filled with 1 symbol', async ({}) =
   await orderCreationPage.orderButton.checkEnabled(false)
 })
 
-test('login and sign out', async ({} ) => {
+test('login and sign out', async ({}) => {
   const orderCreationPage = await loginPage.signIn(USERNAME, PASSWORD)
   await orderCreationPage.statusButton.checkVisible()
   await orderCreationPage.logOutButton.checkVisible()
   await orderCreationPage.logOutButton.click()
   await loginPage.signInButton.checkVisible()
 })
-
-
