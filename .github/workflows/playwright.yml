@@ -1,30 +1,36 @@
 name: Playwright Tests
+
 on:
   push:
     branches: [main, master, homework-17]
   pull_request:
     branches: [main, master]
+
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
       - name: Install dependencies
         run: npm ci
 
       - name: Run ESLint check
-        run: |
-            echo "Running ESLint to check for linting issues..."
-            npm run lint   
+        run: npm run lint
 
       - name: Run Prettier check
-        run: |
-            echo "Running Prettier to check for formatting issues..."
-            npm run check
+        run: npm run check
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Browsers
         run: npx playwright install
