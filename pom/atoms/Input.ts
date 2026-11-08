@@ -29,4 +29,8 @@ export class Input {
   async checkAttached(attached = true): Promise<void> {
     await expect(this.inputLoc).toBeAttached({ attached })
   }
+
+  async click(): Promise<void> {
+    await this.inputLoc.click()
+  }
 }
