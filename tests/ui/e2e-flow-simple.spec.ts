@@ -24,4 +24,3 @@ test('TL-17-2 login with correct credentials and verify order creation page', as
   await orderCreationPage.phoneField.checkVisible()
   await orderCreationPage.commentField.checkVisible()
 })
-
