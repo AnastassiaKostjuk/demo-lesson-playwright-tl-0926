@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
@@ -39,14 +39,13 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 10
+        timeout-minutes: 12
         env:
-          PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT: 30000
           DEBUG: pw:install
         run: |
           for i in 1 2 3; do
-            npx playwright install --with-deps && break
-            echo "Attempt $i failed, retrying..."
+            timeout 180 npx playwright install --with-deps && break
+            echo "Attempt $i failed or timed out, retrying..."
             sleep 5
           done
 
