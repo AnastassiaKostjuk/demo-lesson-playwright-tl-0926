@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 90
+    timeout-minutes: 20
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -26,14 +26,40 @@ jobs:
       - name: Run Prettier check
         run: npm run check
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(npx playwright --version | sed 's/Version //')" >> $GITHUB_OUTPUT
+
+      - name: Restore Playwright browsers cache
+        id: playwright-cache
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
 
-      - name: Install Playwright Browsers
-        run: npx playwright install
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT: 30000
+          DEBUG: pw:install
+        run: |
+          for i in 1 2 3; do
+            npx playwright install --with-deps && break
+            echo "Attempt $i failed, retrying..."
+            sleep 5
+          done
+
+      - name: Save Playwright browsers cache
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-cache.outputs.cache-primary-key }}
+
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
 
       - name: Run Playwright tests
         env:
