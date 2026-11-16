@@ -1,8 +1,9 @@
 import { Locator, Page, expect } from '@playwright/test'
 import { Button } from '../atoms/Button'
 import { Input } from '../atoms/Input'
+import { BasePage } from './BasePage'
 
-export class OrderPage {
+export class OrderPage extends BasePage {
   readonly page: Page
   readonly statusButton: Button
   readonly usernameField: Input
@@ -15,8 +16,10 @@ export class OrderPage {
   readonly phoneInputErrorPopup: Locator
   readonly nameInputErrorPopup: Locator
   readonly logOutButton: Button
+  readonly orderIdInput: Input
+  readonly findOrderButton: Button
 
-  constructor(page: Page) {
+  constructor(page: Page) { super(page)
     this.page = page
     this.statusButton = new Button(page, 'openStatusPopup-button')//page.getByTestId('openStatusPopup-button')
     this.usernameField = new Input(page, 'username-input')
@@ -29,6 +32,8 @@ export class OrderPage {
     this.phoneInputErrorPopup = page.locator('[data-name="phone-input-error"]')
     this.nameInputErrorPopup = page.locator('[data-name="username-input-error"]')
     this.logOutButton = new Button(page, 'logout-button')
+    this.orderIdInput = new Input(page, 'searchOrder-input')
+    this.findOrderButton = new Button(page, 'searchOrder-submitButton')
   }
 
   async order(): Promise<void> {
